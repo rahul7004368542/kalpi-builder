@@ -1,0 +1,22 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      BROKER_MODE: mock                                # mock | live
+      DB_PATH: /srv/data/kalpi.db
+      WEBHOOK_URL: http://localhost:8000/webhooks/sink # built-in demo consumer
+      WEBHOOK_SECRET: change-me
+    volumes:
+      - kalpi-data:/srv/data                           # executions survive restarts
+
+  tests:                                               # docker compose run --rm tests
+    build: .
+    profiles: ["test"]
+    command: python -m pytest -q tests
+    environment:
+      BROKER_MODE: mock
+
+volumes:
+  kalpi-data:
